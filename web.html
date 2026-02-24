@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soumyaa V, LLP Physics · CMS · DESY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --surface: #0a0f1e;
+    --surface2: #111827;
+    --border: rgba(99,179,255,0.12);
+    --accent: #63b3ff;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --highlight: rgba(99,179,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── CANVAS ── */
+  #particle-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(5,8,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative;
+    z-index: 1;
+  }
+
+  section {
+    min-height: 100vh;
+    padding: 7rem 3rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    padding-top: 5rem;
+  }
+
+  .hero-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-name span {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .hero-tagline {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+    max-width: 500px;
+  }
+
+  .hero-tagline strong { color: var(--accent2); font-weight: 400; }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+  }
+
+  .btn-primary:hover { background: #93c5fd; transform: translateY(-1px); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+
+  .btn-outline:hover { border-color: var(--accent); background: var(--highlight); }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    margin-bottom: 3rem;
+  }
+
+  .section-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.1;
+    color: var(--text);
+  }
+
+  .section-title em { color: var(--accent2); font-style: italic; }
+
+  /* ── ABOUT ── */
+  #about {
+    display: block;
+  }
+
+  .about-text p {
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    line-height: 1.8;
+  }
+
+  .about-text p strong { color: var(--text); font-weight: 400; }
+
+  .about-right {}
+
+  .hobby-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .hobby-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+
+  .hobby-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-2px);
+  }
+
+  .hobby-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
+  .hobby-name { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+  .hobby-desc { font-size: 0.65rem; color: var(--muted); margin-top: 0.1rem; }
+
+  /* ── RESEARCH ── */
+  .research-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .research-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.8rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .research-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .research-card:hover::before { transform: scaleX(1); }
+  .research-card:hover { border-color: rgba(99,179,255,0.3); transform: translateY(-3px); }
+
+  .rc-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    margin-bottom: 0.8rem;
+  }
+
+  .tag-hw { background: rgba(52,211,153,0.12); color: var(--accent3); border: 1px solid rgba(52,211,153,0.2); }
+  .tag-sw { background: rgba(99,179,255,0.1); color: var(--accent); border: 1px solid rgba(99,179,255,0.2); }
+  .tag-ana { background: rgba(167,139,250,0.1); color: var(--accent2); border: 1px solid rgba(167,139,250,0.2); }
+
+  .rc-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .rc-desc { color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
+
+  /* ── CONFERENCES TIMELINE ── */
+  #conferences { }
+
+  .timeline-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--highlight);
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 0 0 2.5rem 2rem;
+    transition: opacity 0.3s;
+  }
+
+  .timeline-item.hidden { display: none; }
+
+  .timeline-dot {
+    position: absolute;
+    left: -0.45rem;
+    top: 0.4rem;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  .dot-speaker { background: var(--accent2); box-shadow: 0 0 8px var(--accent2); }
+  .dot-attendee { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .dot-poster { background: var(--accent3); box-shadow: 0 0 8px var(--accent3); }
+
+  .ti-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .ti-year {
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .ti-role {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  .role-speaker { background: rgba(167,139,250,0.15); color: var(--accent2); }
+  .role-attendee { background: rgba(99,179,255,0.1); color: var(--accent); }
+  .role-poster { background: rgba(52,211,153,0.1); color: var(--accent3); }
+
+  .ti-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .ti-location { font-size: 0.75rem; color: var(--muted); }
+  .ti-talk { font-size: 0.75rem; color: var(--accent2); margin-top: 0.3rem; font-style: italic; }
+
+  /* ── MENTORING ── */
+  .mentoring-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .mentee-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+  }
+
+  .mentee-card:hover {
+    border-color: var(--accent3);
+    transform: translateY(-2px);
+  }
+
+  .mentee-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--bg);
+    margin-bottom: 1rem;
+  }
+
+  .mentee-name { font-weight: 600; font-size: 0.85rem; color: var(--text); }
+  .mentee-level { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent3); margin: 0.2rem 0 0.5rem; }
+  .mentee-topic { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── CONTACT ── */
+  #contact {
+    min-height: auto;
+    padding-bottom: 6rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .contact-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    background: var(--surface);
+  }
+
+  .contact-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── COLLIDER VISUALIZER ── */
+  #collider-section {
+    padding: 4rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .collider-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .collider-wrap h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .collider-wrap p {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  #collider-canvas {
+    width: 100%;
+    max-width: 700px;
+    height: 200px;
+    display: block;
+    margin: 0 auto;
+    cursor: pointer;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+
+  .collide-btn {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  .collide-btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1rem; }
+    section { padding: 5rem 1.5rem 3rem; }
+    #about { grid-template-columns: 1fr; gap: 2.5rem; }
+    .research-grid { grid-template-columns: 1fr; }
+    .mentoring-grid { grid-template-columns: 1fr 1fr; }
+    .hero-stats { gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<nav>
+  <a href="#hero" class="nav-logo">SV</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#conferences">Talks</a></li>
+      <li><a href="#mentoring">Teaching</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-label">// PhD Researcher · CMS Collaboration · DESY Hamburg</div>
+    <h1 class="hero-name">Soumyaa <span>V.</span></h1>
+    <p class="hero-tagline">
+      Hunting for <strong>long-lived particles</strong> beyond the Standard Model, stau pairs, machine learning, and detector hardware at the <strong>CMS experiment, LHC</strong>.
+    </p>
+    <div class="hero-cta">
+      <a href="#research" class="btn btn-primary">↓ My Work</a>
+      <a href="https://www.linkedin.com/in/soumyaa-v-900548190/" target="_blank" class="btn btn-outline">LinkedIn ↗</a>
+      <a href="#contact" class="btn btn-outline">Get in Touch</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num" id="count-conf">5</span>
+        <span class="stat-label">Conferences</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" id="count-talks">2</span>
+        <span class="stat-label">Talks / Posters</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">LLP</span>
+        <span class="stat-label">Focus Area</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">CMS</span>
+        <span class="stat-label">Experiment</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEYNMAN DIAGRAM -->
+  <div id="collider-section" class="reveal">
+    <div class="collider-wrap">
+      <h3>// My Signal Process: Long-Lived Stau Pair Production</h3>
+      <p>The diagrams below show the two decay channels I study. Switch between them and hover over particles to learn more.</p>
+      <div style="display:flex; gap:0.6rem; justify-content:center; margin-bottom:1.2rem; flex-wrap:wrap;">
+        <button class="filter-btn active" id="tab-semilep" onclick="setDiagram('semilep')">Semileptonic (Masters)</button>
+        <button class="filter-btn" id="tab-hadhad" onclick="setDiagram('hadhad')">Fully Hadronic (PhD)</button>
+      </div>
+      <canvas id="collider-canvas" style="height:320px;"></canvas>
+      <div id="feynman-tooltip" style="
+        margin-top:0.8rem; min-height:1.4rem; font-size:0.72rem;
+        color:var(--accent2); letter-spacing:0.04em; text-align:center;
+        font-family:'JetBrains Mono',monospace; transition: opacity 0.2s;
+      "></div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div>
+      <div class="section-header reveal">
+        <div class="section-eyebrow">// 01 · About</div>
+        <h2 class="section-title">Physicist.<br><em>Artist.</em> Explorer.</h2>
+      </div>
+      <div class="about-text reveal">
+        <p>
+          I'm a <strong>PhD researcher in experimental particle physics</strong> at DESY Hamburg, working within the CMS Collaboration at the LHC (CERN). My research is focused on <strong>long-lived particle (LLP) searches</strong>, specifically, studying the semileptonic decays of long-lived stau pairs using advanced machine learning techniques.
+        </p>
+        <p>
+          On the hardware side, I contribute to the <strong>CMS Phase-2 detector upgrade</strong>, assembling PS modules and conducting thermal tests on endcap module cooling materials. I'm also part of the <strong>Tau object group</strong>, where I've worked on tau fake rate measurements for UL2017 data.
+        </p>
+        <p>
+          Currently extending my stau LLP analysis to the <strong>Future Circular Collider (FCCee)</strong>, and contributing to HEPData preservation for published CMS results. I hold a Masters in Physics from the University of Cologne (BCGS, grade 1.4) and a BSc (Hons) from the University of Delhi (9.676/10).
+        </p>
+        <a href="https://www.linkedin.com/in/soumyaa-v-900548190/" target="_blank" class="btn btn-outline" style="margin-top:1rem">View LinkedIn ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH -->
+  <section id="research">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// 02 · Research & Contributions</div>
+      <h2 class="section-title">Building the<br><em>instruments</em> of discovery.</h2>
+    </div>
+    <div class="research-grid reveal">
+      <div class="research-card" style="grid-column: 1 / -1; border-color: rgba(167,139,250,0.25);">
+        <span class="rc-tag tag-ana">⭐ PhD Focus</span>
+        <div class="rc-title">Long-Lived Stau Pairs, CMS RUN 3 & FCCee</div>
+        <p class="rc-desc">My primary research: searching for long-lived supersymmetric stau particles (τ̃) at the CMS experiment. I apply machine learning techniques, XGBoost, DNNs, Decision Trees, to distinguish long-lived stau decay signatures from SM backgrounds in the semileptonic channel. Currently extending this analysis to the <strong style="color:var(--accent2)">Future Circular Collider (FCCee)</strong> to explore new sensitivity at higher energies. This work directly probes BSM physics and SUSY dark matter candidates.</p>
+      </div>
+
+      <div class="research-card">
+        <span class="rc-tag tag-hw">Hardware</span>
+        <div class="rc-title">CMS Phase-2 Detector Upgrade</div>
+        <p class="rc-desc">Assembly of PS (Pixel-Strip) modules for the CMS Inner Tracker upgrade. Conducting thermal tests on endcap module cooling materials in clean room environments, ensuring detector components meet strict operational requirements for HL-LHC.</p>
+      </div>
+      <div class="research-card">
+        <span class="rc-tag tag-sw">Software · Analysis</span>
+        <div class="rc-title">Tau Fake Rate Measurements</div>
+        <p class="rc-desc">Performed tau fake rate (FR) measurements for UL2017 (Ultra-Legacy) CMS data as part of the Tau Object Group. These calibration measurements are foundational for any analysis involving hadronic tau reconstruction across the collaboration.</p>
+      </div>
+      <div class="research-card">
+        <span class="rc-tag tag-sw">Open Science</span>
+        <div class="rc-title">HEPData, Published CMS Results</div>
+        <p class="rc-desc">Contributing to <strong style="color:var(--accent)">HEPData</strong> preservation and publication of a CMS paper, uploading analysis data, histograms, and supplementary material to the community's open-access high energy physics repository, enabling result reuse and reinterpretation.</p>
+      </div>
+      <div class="research-card">
+        <span class="rc-tag tag-ana">Previous</span>
+        <div class="rc-title">ECAL Design, Lohengrin Light Dark Matter Search</div>
+        <p class="rc-desc">Worked on the design of the Electron Calorimeter (ECAL) for the Lohengrin project, a light dark matter search experiment at the University of Bonn, under Dr. Matthias Hamer and Dr. Klaus Desch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFERENCES -->
+  <section id="conferences">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// 03 · Conferences & Talks</div>
+      <h2 class="section-title">Sharing physics<br>with the <em>world.</em></h2>
+    </div>
+
+    <div class="timeline-controls reveal">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="speaker">Speaker / Talk</button>
+      <button class="filter-btn" data-filter="facilitator">Facilitator</button>
+      <button class="filter-btn" data-filter="attendee">Attendee</button>
+    </div>
+
+    <div class="timeline reveal">
+
+      <div class="timeline-item" data-role="attendee">
+        <div class="timeline-dot dot-attendee"></div>
+        <div class="ti-meta">
+          <span class="ti-year">Nov 2025</span>
+          <span class="ti-role role-attendee">Attendee</span>
+        </div>
+        <div class="ti-title">PhyStat School</div>
+        <div class="ti-location">📍 Netherlands</div>
+        <div class="ti-talk">Statistical methods in particle physics, advanced techniques for LLP and BSM analyses</div>
+      </div>
+
+      <div class="timeline-item" data-role="attendee">
+        <div class="timeline-dot dot-attendee"></div>
+        <div class="ti-meta">
+          <span class="ti-year">Sep 2025</span>
+          <span class="ti-role role-attendee">Attendee</span>
+        </div>
+        <div class="ti-title">CMS Week @ CERN</div>
+        <div class="ti-location">📍 CERN, Geneva, Switzerland</div>
+        <div class="ti-talk">CMS Collaboration-wide plenary and working group meetings</div>
+      </div>
+
+      <div class="timeline-item" data-role="facilitator">
+        <div class="timeline-dot" style="background:#f59e0b; box-shadow: 0 0 8px #f59e0b;"></div>
+        <div class="ti-meta">
+          <span class="ti-year">2025</span>
+          <span class="ti-role" style="background:rgba(245,158,11,0.12); color:#f59e0b;">🏆 Facilitator · 1st Place</span>
+        </div>
+        <div class="ti-title">CMS Data Analysis School (DAS) 2025</div>
+        <div class="ti-location">📍 Hamburg, Germany</div>
+        <div class="ti-talk">Facilitated a data analysis exercise helping participants understand the CMS analysis workflow. Our team placed <strong style="color:#f59e0b">1st</strong> among all groups.</div>
+      </div>
+
+      <div class="timeline-item" data-role="speaker">
+        <div class="timeline-dot dot-speaker"></div>
+        <div class="ti-meta">
+          <span class="ti-year">Mar, Apr 2025</span>
+          <span class="ti-role role-speaker">Talk</span>
+        </div>
+        <div class="ti-title">DPG Spring Meeting (Deutsche Physikalische Gesellschaft)</div>
+        <div class="ti-location">📍 Göttingen, Germany</div>
+        <div class="ti-talk">"Applying machine learning techniques to a long-lived SUSY stau analysis within the CMS collaboration", presented ongoing Master's thesis results</div>
+      </div>
+
+      <div class="timeline-item" data-role="speaker">
+        <div class="timeline-dot dot-speaker"></div>
+        <div class="ti-meta">
+          <span class="ti-year">2025</span>
+          <span class="ti-role role-speaker">Talk</span>
+        </div>
+        <div class="ti-title">CMS FPS Conference 2025</div>
+        <div class="ti-location">📍 Hamburg, Germany</div>
+        <div class="ti-talk">Presented LLP stau analysis work within the CMS collaboration</div>
+      </div>
+
+      <div class="timeline-item" data-role="attendee">
+        <div class="timeline-dot dot-attendee"></div>
+        <div class="ti-meta">
+          <span class="ti-year">Jan 2025</span>
+          <span class="ti-role role-attendee">Attendee</span>
+        </div>
+        <div class="ti-title">AI Winter School 2025</div>
+        <div class="ti-location">📍 Brown University, USA</div>
+        <div class="ti-talk">Four-day school covering LLMs, GNNs, Autoencoders, and Generative AI, lectures and hands-on workshops by faculty and industry experts</div>
+      </div>
+
+      <div class="timeline-item" data-role="speaker">
+        <div class="timeline-dot dot-poster"></div>
+        <div class="ti-meta">
+          <span class="ti-year">2019</span>
+          <span class="ti-role role-poster">Poster</span>
+        </div>
+        <div class="ti-title">VISTAAR, Sri Venkateswara College, University of Delhi</div>
+        <div class="ti-location">📍 New Delhi, India</div>
+        <div class="ti-talk">"Cosmic Microwave Background", poster at STEM exhibition promoting emerging areas in science</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EXPERIENCE / TEACHING -->
+  <section id="mentoring">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// 04 · Experience & Teaching</div>
+      <h2 class="section-title">Beyond the<br><em>analysis.</em></h2>
+    </div>
+    <p class="reveal" style="color:var(--muted); margin-bottom:2rem; max-width:600px; font-size:0.85rem; line-height:1.8;">
+      Alongside research, I contribute to the CMS community through teaching, facilitation, and knowledge transfer, helping make the collaboration's tools and methods accessible to new physicists.
+    </p>
+    <div class="mentoring-grid reveal" style="grid-template-columns: 1fr 1fr;">
+      <div class="mentee-card" style="grid-column: 1 / -1; border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.04);">
+        <div class="mentee-avatar" style="background: linear-gradient(135deg, #f59e0b, #f43f5e);">🏆</div>
+        <div class="mentee-name">CMS Data Analysis School 2025, Facilitator</div>
+        <div class="mentee-level" style="color:#f59e0b;">1st Place · Hamburg, Germany · 2025</div>
+        <div class="mentee-topic">Led participants through the full CMS analysis workflow, from raw data to physics results. Helped students understand trigger selection, object reconstruction, and statistical interpretation in a hands-on environment. Our team placed 1st among all groups.</div>
+      </div>
+      <div class="mentee-card" style="border-style: dashed; opacity: 0.5;">
+        <div class="mentee-avatar" style="background: rgba(99,179,255,0.15); color: var(--muted); font-size:1.4rem;">+</div>
+        <div class="mentee-name" style="color:var(--muted);">Summer Student · 2026</div>
+        <div class="mentee-level" style="color:var(--muted);">Coming soon</div>
+        <div class="mentee-topic" style="color:var(--muted);">This section will be updated when my summer student joins.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" style="min-height:auto; padding-bottom:2rem;">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// 05 · Skills & Tools</div>
+      <h2 class="section-title">The <em>toolkit</em>.</h2>
+    </div>
+    <div class="research-grid reveal" style="grid-template-columns: repeat(3,1fr);">
+      <div class="research-card">
+        <span class="rc-tag tag-sw">Analysis</span>
+        <div class="rc-title">Physics Software</div>
+        <p class="rc-desc" style="font-size:0.75rem;">ROOT · Python · C++ · Julia · Fortran · Mathematica · LaTeX</p>
+      </div>
+      <div class="research-card">
+        <span class="rc-tag tag-ana">ML / Stats</span>
+        <div class="rc-title">Machine Learning</div>
+        <p class="rc-desc" style="font-size:0.75rem;">XGBoost · Deep Neural Networks · Decision Trees · Scikit-learn · Data Analysis pipelines</p>
+      </div>
+      <div class="research-card">
+        <span class="rc-tag tag-hw">Hardware</span>
+        <div class="rc-title">Industry & Lab</div>
+        <p class="rc-desc" style="font-size:0.75rem;">Clean Rooms · PS Module Assembly · Thermal Testing · Tinkercad · Proteus · Scilab</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- HOBBIES -->
+  <section id="hobbies" style="min-height:auto; padding-bottom:3rem;">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// 06 · Beyond Physics</div>
+      <h2 class="section-title">When I'm not<br><em>at DESY.</em></h2>
+    </div>
+    <div class="about-right reveal">
+      <div class="section-eyebrow" style="margin-bottom:1rem"></div>
+      <div class="hobby-grid">
+        <div class="hobby-card">
+          <div class="hobby-icon">🎭</div>
+          <div class="hobby-name">Opera & Ballet</div>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">✏️</div>
+          <div class="hobby-name">Urban Sketching</div>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">📚</div>
+          <div class="hobby-name">Reading</div>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">🏸</div>
+          <div class="hobby-name">Badminton</div>
+        </div>
+        <div class="hobby-card" style="grid-column: 1 / -1">
+          <div class="hobby-icon">♟️</div>
+          <div class="hobby-name">Chess</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-header reveal" style="text-align:center">
+      <div class="section-eyebrow">// 05 · Contact</div>
+      <h2 class="section-title">Let's <em>connect.</em></h2>
+    </div>
+    <p class="reveal" style="color:var(--muted); max-width:420px; text-align:center; font-size:0.85rem;">
+      Whether it's a collaboration, a question about my research, or just to say hello, I'd love to hear from you.
+    </p>
+    <div class="contact-links reveal">
+      <a href="mailto:soumyaa.v@desy.de" class="contact-link">✉ Email</a>
+      <a href="https://www.linkedin.com/in/soumyaa-v-900548190/" target="_blank" class="contact-link">in LinkedIn</a>
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" class="contact-link">⌥ GitHub</a>
+      <a href="#" class="contact-link">📄 CV / Resume</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>© 2026 Soumyaa V.</p>
+  <p style="margin-top:0.3rem; font-size:0.6rem;">Looking for long-lived sparticles.</p>
+</footer>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+// ── BACKGROUND PARTICLE FIELD ──────────────────────
+const bgCanvas = document.getElementById('particle-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+
+function resizeBg() {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+const particles = Array.from({ length: 120 }, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  vx: (Math.random() - 0.5) * 0.3,
+  vy: (Math.random() - 0.5) * 0.3,
+  size: Math.random() * 1.5 + 0.3,
+  alpha: Math.random() * 0.5 + 0.1,
+  color: Math.random() > 0.7 ? '#a78bfa' : '#63b3ff'
+}));
+
+let mouseX = -9999, mouseY = -9999;
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+function animBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+  particles.forEach(p => {
+    // Slight attraction to mouse
+    const dx = mouseX - p.x, dy = mouseY - p.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 150) {
+      p.vx += dx / dist * 0.02;
+      p.vy += dy / dist * 0.02;
+    }
+    // Damping
+    p.vx *= 0.99; p.vy *= 0.99;
+    p.x += p.vx; p.y += p.vy;
+
+    // Wrap
+    if (p.x < 0) p.x = bgCanvas.width;
+    if (p.x > bgCanvas.width) p.x = 0;
+    if (p.y < 0) p.y = bgCanvas.height;
+    if (p.y > bgCanvas.height) p.y = 0;
+
+    bgCtx.beginPath();
+    bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    bgCtx.fillStyle = p.color;
+    bgCtx.globalAlpha = p.alpha;
+    bgCtx.fill();
+  });
+
+  // Draw connections
+  bgCtx.globalAlpha = 1;
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 80) {
+        bgCtx.beginPath();
+        bgCtx.moveTo(particles[i].x, particles[i].y);
+        bgCtx.lineTo(particles[j].x, particles[j].y);
+        bgCtx.strokeStyle = '#63b3ff';
+        bgCtx.globalAlpha = (1 - d/80) * 0.12;
+        bgCtx.lineWidth = 0.5;
+        bgCtx.stroke();
+      }
+    }
+  }
+  bgCtx.globalAlpha = 1;
+  requestAnimationFrame(animBg);
+}
+animBg();
+
+// ── FEYNMAN DIAGRAM ────────────────────────────────
+const cc  = document.getElementById('collider-canvas');
+const cx  = cc.getContext('2d');
+
+
+let DPR = window.devicePixelRatio || 1;
+let FW = 800, FH = 340;
+
+function resizeFeynman() {
+  DPR = window.devicePixelRatio || 1;
+  const wrap = cc.parentElement;
+  FW = Math.min(wrap.clientWidth - 40, 860);
+  FH = 340;
+  cc.width  = FW * DPR;
+  cc.height = FH * DPR;
+  cc.style.width  = FW + 'px';
+  cc.style.height = FH + 'px';
+  cx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+
+let currentDiagram = 'semilep';
+const tooltip = document.getElementById('feynman-tooltip');
+let hitRegions = [];
+
+function seg(p,lo,hi){return Math.max(0,Math.min(1,(p-lo)/(hi-lo)));}
+
+function setDiagram(d) {
+  currentDiagram = d;
+  document.getElementById('tab-semilep').classList.toggle('active', d==='semilep');
+  document.getElementById('tab-hadhad').classList.toggle('active', d==='hadhad');
+  drawStatic();
+}
+
+function lbl(x,y,txt,col='#e2e8f0',sz=11,align='left'){
+  cx.save();cx.font=`${sz}px 'JetBrains Mono',monospace`;
+  cx.fillStyle=col;cx.textAlign=align;cx.textBaseline='middle';
+  cx.shadowColor=col;cx.shadowBlur=5;cx.fillText(txt,x,y);cx.restore();
+}
+function drawStraight(x1,y1,x2,y2,col,w=1.8,t=1){
+  if(t<=0)return;
+  cx.save();cx.strokeStyle=col;cx.lineWidth=w;cx.globalAlpha=0.9;
+  cx.shadowColor=col;cx.shadowBlur=4;
+  cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x1+(x2-x1)*t,y1+(y2-y1)*t);cx.stroke();cx.restore();
+}
+function drawFermion(x1,y1,x2,y2,col,t=1){
+  if(t<=0)return;
+  const ex=x1+(x2-x1)*t,ey=y1+(y2-y1)*t;
+  cx.save();cx.strokeStyle=col;cx.lineWidth=2;cx.globalAlpha=0.9;cx.shadowColor=col;cx.shadowBlur=6;
+  cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(ex,ey);cx.stroke();
+  if(t>0.7){
+    const ang=Math.atan2(ey-y1,ex-x1),al=7;
+    cx.globalAlpha=(t-0.7)/0.3;cx.fillStyle=col;
+    cx.beginPath();cx.moveTo(ex,ey);
+    cx.lineTo(ex-al*Math.cos(ang-0.42),ey-al*Math.sin(ang-0.42));
+    cx.lineTo(ex-al*Math.cos(ang+0.42),ey-al*Math.sin(ang+0.42));
+    cx.closePath();cx.fill();
+  }
+  cx.restore();
+}
+function drawScalarL(x1,y1,x2,y2,col='#34d399',t=1){
+  if(t<=0)return;
+  cx.save();cx.setLineDash([7,5]);cx.strokeStyle=col;cx.lineWidth=2.5;
+  cx.globalAlpha=0.92;cx.shadowColor=col;cx.shadowBlur=8;
+  cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x1+(x2-x1)*t,y1+(y2-y1)*t);cx.stroke();cx.restore();
+}
+function drawWavy(x1,y1,x2,y2,col='#f59e0b',t=1){
+  if(t<=0)return;
+  const ex=x1+(x2-x1)*t,ey=y1+(y2-y1)*t;
+  const dx=ex-x1,dy=ey-y1,len=Math.sqrt(dx*dx+dy*dy);if(len<1)return;
+  const nx=-dy/len,ny=dx/len,steps=Math.max(4,Math.floor(len/4)),amp=4.5;
+  cx.save();cx.strokeStyle=col;cx.lineWidth=1.8;cx.globalAlpha=0.9;cx.shadowColor=col;cx.shadowBlur=6;
+  cx.beginPath();
+  for(let i=0;i<=steps;i++){
+    const s=i/steps,bx=x1+dx*s,by=y1+dy*s,wave=amp*Math.sin(s*Math.PI*8);
+    if(i===0)cx.moveTo(bx+nx*wave,by+ny*wave);else cx.lineTo(bx+nx*wave,by+ny*wave);
+  }
+  cx.stroke();cx.restore();
+}
+
+function drawProton(x,y,pulse=0){
+  cx.save();
+  const r=14+pulse*2,g=cx.createRadialGradient(x,y,2,x,y,r);
+  g.addColorStop(0,'rgba(52,211,153,0.9)');g.addColorStop(1,'rgba(52,211,153,0)');
+  cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);cx.fill();
+  cx.strokeStyle='rgba(52,211,153,0.5)';cx.lineWidth=1;
+  for(let i=0;i<4;i++){const a=i*Math.PI/2+0.3;cx.beginPath();cx.moveTo(x+5*Math.cos(a),y+5*Math.sin(a));cx.lineTo(x+(r-2)*Math.cos(a),y+(r-2)*Math.sin(a));cx.stroke();}
+  cx.restore();
+}
+function drawVertex(x,y,col='#a78bfa',r=5){
+  cx.save();cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);
+  cx.fillStyle=col;cx.shadowColor=col;cx.shadowBlur=14;cx.fill();cx.restore();
+}
+function drawJet(x,y,angle,col='#63b3ff',opacity=1){
+  cx.save();cx.translate(x,y);cx.rotate(angle);cx.globalAlpha=opacity;
+  const len=65,spread=0.35,g=cx.createLinearGradient(0,0,len,0);
+  g.addColorStop(0,col+'88');g.addColorStop(1,col+'00');
+  cx.beginPath();cx.moveTo(0,0);
+  cx.lineTo(len*Math.cos(spread),len*Math.sin(spread));
+  cx.arc(len,0,len*Math.tan(spread),spread,-spread,true);
+  cx.lineTo(0,0);cx.fillStyle=g;cx.fill();
+  cx.strokeStyle=col;cx.lineWidth=0.8;cx.globalAlpha=opacity*0.5;
+  cx.beginPath();cx.moveTo(0,0);cx.lineTo(len,0);cx.stroke();cx.restore();
+}
+function addHit(x,y,r,txt){hitRegions.push({x,y,r,txt});}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+}
+
+function drawSemilep(){
+  const p=1;
+  hitRegions=[];
+  const W=FW,H=FH,MY=H/2;
+  const ppX=40,vtX=105,DX=228,D1Y=MY-68,D2Y=MY+68;
+  const tU={x:358,y:D1Y-32},nU={x:358,y:D1Y+28};
+  const wV={x:458,y:tU.y-14},nuT={x:458,y:tU.y+24};
+  const mu={x:575,y:wV.y-22},nuMu={x:575,y:wV.y+20};
+  const tD={x:358,y:D2Y+32},nD={x:358,y:D2Y-28};
+
+  drawProton(ppX,MY,0);
+  drawStraight(ppX+14,MY,vtX,MY,'#34d399',1.5,seg(p,0,0.07));
+  if(p>0.07){
+    drawVertex(vtX,MY,'#34d399',6);lbl(vtX+9,MY-18,'pp','#34d399',10);
+    addHit(vtX,MY,12,'Primary vertex (PV): hard pp scattering produces a stau pair via Drell-Yan or gluon fusion');
+  }
+  drawScalarL(vtX,MY,DX,D1Y,'#34d399',seg(p,0.07,0.22));
+  drawScalarL(vtX,MY,DX,D2Y,'#34d399',seg(p,0.07,0.22));
+  if(p>0.13){
+    lbl(vtX+36,MY-46,'τ̃','#34d399',14);lbl(vtX+36,MY+30,'τ̃','#34d399',14);
+    addHit(vtX+58,MY-50,16,'τ̃ (stau): long-lived SUSY sparticle, travels macroscopic distance, creating a displaced vertex');
+    addHit(vtX+58,MY+36,16,'τ̃: the stau is the NLSP; its long lifetime is the key experimental handle');
+
+  }
+  if(p>0.22){drawVertex(DX,D1Y,'#a78bfa',4);drawVertex(DX,D2Y,'#a78bfa',4);}
+  drawFermion(DX,D1Y,tU.x,tU.y,'#63b3ff',seg(p,0.22,0.37));
+  drawWavy(DX,D1Y,nU.x,nU.y,'#f59e0b',seg(p,0.22,0.37));
+  if(p>0.28){
+    lbl(tU.x+7,tU.y,'τ','#63b3ff',13);lbl(nU.x+7,nU.y,'G̃','#f59e0b',11);
+    addHit(tU.x+16,tU.y,14,'τ lepton: decays leptonically in the semileptonic channel → W + ν_τ (Masters analysis)');
+    addHit(nU.x+24,nU.y,14,'G̃ (gravitino): the supersymmetric partner of the graviton. It is the lightest SUSY particle (LSP) in gauge-mediated SUSY breaking, is invisible to the detector, and carries away missing transverse energy');
+  }
+  if(p>0.37)drawVertex(tU.x,tU.y,'#63b3ff',3.5);
+  drawWavy(tU.x,tU.y,wV.x,wV.y,'#f43f5e',seg(p,0.37,0.53));
+  drawFermion(tU.x,tU.y,nuT.x,nuT.y,'#93c5fd',seg(p,0.37,0.53));
+  if(p>0.45){
+    lbl(wV.x+7,wV.y,'W⁻','#f43f5e',13);lbl(nuT.x+7,nuT.y,'ν_τ','#93c5fd',11);
+    addHit(wV.x+18,wV.y,14,'W⁻: weak boson mediating leptonic tau decay');
+    addHit(nuT.x+18,nuT.y,14,'ν_τ: tau neutrino, contributes to missing transverse energy');
+  }
+  if(p>0.53)drawVertex(wV.x,wV.y,'#f43f5e',3.5);
+  drawFermion(wV.x,wV.y,mu.x,mu.y,'#c4b5fd',seg(p,0.53,0.69));
+  drawFermion(wV.x,wV.y,nuMu.x,nuMu.y,'#93c5fd',seg(p,0.53,0.69));
+  if(p>0.61){
+    lbl(mu.x+7,mu.y,'μ/e⁻','#c4b5fd',12);lbl(nuMu.x+7,nuMu.y,'ν̄_μ/ν̄_e','#93c5fd',10);
+    addHit(mu.x+20,mu.y,14,'μ/e⁻: reconstructed lepton, leptonic trigger + displaced vertex probe for the LLP search');
+    addHit(nuMu.x+26,nuMu.y,14,'ν̄: antineutrino, escapes detection');
+  }
+  drawFermion(DX,D2Y,tD.x,tD.y,'#63b3ff',seg(p,0.22,0.37));
+  drawWavy(DX,D2Y,nD.x,nD.y,'#f59e0b',seg(p,0.22,0.37));
+  if(p>0.28){
+    lbl(tD.x+7,tD.y,'τ','#63b3ff',13);lbl(nD.x+7,nD.y,'G̃','#f59e0b',11);
+    addHit(tD.x+14,tD.y,14,'τ: decays hadronically → τh-jet (hadronic leg of semileptonic channel)');
+    addHit(nD.x+24,nD.y,14,'G̃ (gravitino): invisible LSP from the stau decay, contributes to ETmiss');
+  }
+  if(p>0.69){
+    const op=seg(p,0.69,0.84);drawJet(tD.x,tD.y,0.20,'#63b3ff',op);
+    cx.globalAlpha=op*0.85;
+    lbl(tD.x+36,tD.y-20,'π⁺','#63b3ff',10);lbl(tD.x+50,tD.y,'π⁰','#63b3ff',10);lbl(tD.x+36,tD.y+20,'π⁰','#63b3ff',10);
+    cx.globalAlpha=1;
+    addHit(tD.x+50,tD.y,26,'τh-jet: hadronic tau jet in CMS, I work in the tau object group calibrating these');
+  }
+
+}
+
+function drawHadhad(){
+  const p=1;
+  hitRegions=[];
+  const W=FW,H=FH,MY=H/2;
+  const ppX=40,vtX=100,DX=218,D1Y=MY-62,D2Y=MY+62;
+  const t1={x:325,y:D1Y-28},n1={x:325,y:D1Y+24};
+  const t2={x:325,y:D2Y+28},n2={x:325,y:D2Y-24};
+
+  drawProton(ppX,MY,0);
+  drawStraight(ppX+14,MY,vtX,MY,'#34d399',1.5,seg(p,0,0.07));
+  if(p>0.07){
+    drawVertex(vtX,MY,'#34d399',6);lbl(vtX+9,MY-18,'pp','#34d399',10);
+    addHit(vtX,MY,12,'pp → τ̃τ̃: proton-proton collision, PhD analysis channel at CMS RUN 3');
+  }
+  drawScalarL(vtX,MY,DX,D1Y,'#34d399',seg(p,0.07,0.22));
+  drawScalarL(vtX,MY,DX,D2Y,'#34d399',seg(p,0.07,0.22));
+  if(p>0.13){
+    lbl(vtX+32,MY-44,'τ̃','#34d399',14);lbl(vtX+32,MY+28,'τ̃','#34d399',14);
+    addHit(vtX+52,MY-48,16,'τ̃: long-lived stau, the PhD analysis reconstructs both stau decays hadronically');
+    addHit(vtX+52,MY+36,18,'τ̃ (stau): supersymmetric partner of the tau lepton. Its decay length can range from mm to tens of cm inside the CMS tracker, creating a displaced vertex');
+
+  }
+  if(p>0.22){drawVertex(DX,D1Y,'#a78bfa',4);drawVertex(DX,D2Y,'#a78bfa',4);}
+  drawFermion(DX,D1Y,t1.x,t1.y,'#63b3ff',seg(p,0.22,0.40));
+  drawWavy(DX,D1Y,n1.x,n1.y,'#f59e0b',seg(p,0.22,0.40));
+  drawFermion(DX,D2Y,t2.x,t2.y,'#63b3ff',seg(p,0.22,0.40));
+  drawWavy(DX,D2Y,n2.x,n2.y,'#f59e0b',seg(p,0.22,0.40));
+  if(p>0.30){
+    lbl(t1.x+7,t1.y,'τ⁺','#63b3ff',13);lbl(n1.x+7,n1.y,'G̃','#f59e0b',11);
+    lbl(t2.x+7,t2.y,'τ⁻','#63b3ff',13);lbl(n2.x+7,n2.y,'G̃','#f59e0b',11);
+    addHit(t1.x+18,t1.y,14,'τ⁺: decays hadronically → τh-jet (π⁺/π⁰), both taus go hadronic in the PhD channel');
+    addHit(t2.x+18,t2.y,14,'τ⁻: hadronic decay → τh-jet');
+    addHit(n1.x+22,n1.y,14,'G̃ (gravitino): supersymmetric partner of the graviton, the LSP in gauge-mediated SUSY breaking. Invisible, contributes to ETmiss');
+    addHit(n2.x+22,n2.y,14,'G̃ (gravitino): second invisible LSP. Two gravitinos + two displaced tau-jets is the fully hadronic LLP signal signature');
+  }
+  if(p>0.55){
+    const op=seg(p,0.55,0.75);
+    drawJet(t1.x,t1.y,-0.24,'#63b3ff',op);drawJet(t2.x,t2.y,0.24,'#63b3ff',op);
+    cx.globalAlpha=op*0.85;
+    lbl(t1.x+34,t1.y-22,'π⁺','#63b3ff',10);lbl(t1.x+48,t1.y,'π⁰','#63b3ff',10);lbl(t1.x+34,t1.y+18,'π⁰','#63b3ff',10);
+    lbl(t2.x+34,t2.y-18,'π⁻','#63b3ff',10);lbl(t2.x+48,t2.y,'π⁰','#63b3ff',10);lbl(t2.x+34,t2.y+22,'π⁰','#63b3ff',10);
+    cx.globalAlpha=1;
+    addHit(t1.x+50,t1.y,28,'τh-jet: higher branching ratio than semileptonic, but QCD multi-jet is the main background challenge');
+    addHit(t2.x+50,t2.y,28,'τh-jet: two displaced τh-jets + large ETmiss = the PhD signal signature');
+  }
+
+}
+
+function drawStatic(){
+  cx.clearRect(0,0,FW,FH);
+  if(currentDiagram==='semilep')drawSemilep();else drawHadhad();
+}
+
+cc.addEventListener('mousemove',function(e){
+  const rect=cc.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  let found=null;
+  for(const h of hitRegions)if(Math.hypot(mx-h.x,my-h.y)<h.r){found=h;break;}
+  tooltip.textContent=found?'↳ '+found.txt:'';
+  cc.style.cursor=found?'help':'default';
+});
+window.addEventListener('resize',()=>{resizeFeynman();drawStatic();});
+resizeFeynman();
+drawStatic();
+
+// ── CONFERENCE FILTER ──────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    document.querySelectorAll('.timeline-item').forEach(item => {
+      if (filter === 'all' || item.dataset.role === filter) {
+        item.classList.remove('hidden');
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+  });
+});
+
+// ── SCROLL REVEAL ──────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── COUNTER ANIMATION ─────────────────────────────
+function animCount(el, target) {
+  let val = 0;
+  const step = Math.ceil(target / 40);
+  const interval = setInterval(() => {
+    val = Math.min(val + step, target);
+    el.textContent = val;
+    if (val >= target) clearInterval(interval);
+  }, 30);
+}
+
+// Trigger on scroll
+const heroObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animCount(document.getElementById('count-conf'), 5);
+      animCount(document.getElementById('count-talks'), 2);
+    }
+  });
+}, { threshold: 0.5 });
+heroObserver.observe(document.getElementById('hero'));
+
+</script>
+</body>
+</html>
