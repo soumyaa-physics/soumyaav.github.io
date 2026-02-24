@@ -663,12 +663,12 @@
   <section id="about">
     <div>
       <div class="section-header reveal">
-        <div class="section-eyebrow">// 01 · About</div>
+        <div class="section-eyebrow">01 · About</div>
         <h2 class="section-title">Physicist.<br><em>Artist.</em> Explorer.</h2>
       </div>
       <div class="about-text reveal">
         <p>
-          I'm a <strong>PhD researcher in experimental particle physics</strong> at DESY Hamburg, working within the CMS Collaboration at the LHC (CERN). My research is focused on <strong>long-lived particle (LLP) searches</strong>, specifically, studying the hadronic and semileptonic decays of long-lived stau pairs using advanced machine learning techniques.
+          I'm a <strong>PhD researcher in experimental particle physics</strong> at DESY Hamburg, working within the CMS Collaboration at the LHC (CERN). My research is focused on <strong>long-lived particle (LLP) searches</strong>, specifically, studying the semileptonic decays of long-lived stau pairs using advanced machine learning techniques.
         </p>
         <p>
           On the hardware side, I contribute to the <strong>CMS Phase-2 detector upgrade</strong>, assembling PS modules and conducting thermal tests on endcap module cooling materials. I'm also part of the <strong>Tau object group</strong>, where I've worked on tau fake rate measurements for UL2017 data.
@@ -684,7 +684,7 @@
   <!-- RESEARCH -->
   <section id="research">
     <div class="section-header reveal">
-      <div class="section-eyebrow">// 02 · Research & Contributions</div>
+      <div class="section-eyebrow">02 · Research & Contributions</div>
       <h2 class="section-title">Building the<br><em>instruments</em> of discovery.</h2>
     </div>
     <div class="research-grid reveal">
@@ -720,7 +720,7 @@
   <!-- CONFERENCES -->
   <section id="conferences">
     <div class="section-header reveal">
-      <div class="section-eyebrow">// 03 · Conferences & Talks</div>
+      <div class="section-eyebrow">03 · Conferences & Talks</div>
       <h2 class="section-title">Sharing physics<br>with the <em>world.</em></h2>
     </div>
 
@@ -776,17 +776,18 @@
         <div class="ti-location">📍 Göttingen, Germany</div>
         <div class="ti-talk">"Applying machine learning techniques to a long-lived SUSY stau analysis within the CMS collaboration", presented ongoing Master's thesis results</div>
       </div>
-      
-      <div class="timeline-item" data-role="attendee">
-        <div class="timeline-dot dot-attendee"></div>
+
+      <div class="timeline-item" data-role="speaker">
+        <div class="timeline-dot dot-speaker"></div>
         <div class="ti-meta">
-          <span class="ti-year">Sept 2025</span>
-          <span class="ti-role role-attendee">Attendee</span>
+          <span class="ti-year">2025</span>
+          <span class="ti-role role-speaker">Talk</span>
         </div>
-        <div class="ti-title">CMS FSP Meeting 2025</div>
+        <div class="ti-title">CMS FPS Conference 2025</div>
         <div class="ti-location">📍 Hamburg, Germany</div>
+        <div class="ti-talk">Presented LLP stau analysis work within the CMS collaboration</div>
       </div>
-        
+
       <div class="timeline-item" data-role="attendee">
         <div class="timeline-dot dot-attendee"></div>
         <div class="ti-meta">
@@ -815,7 +816,7 @@
   <!-- EXPERIENCE / TEACHING -->
   <section id="mentoring">
     <div class="section-header reveal">
-      <div class="section-eyebrow">// 04 · Experience & Teaching</div>
+      <div class="section-eyebrow">04 · Experience & Teaching</div>
       <h2 class="section-title">Beyond the<br><em>analysis.</em></h2>
     </div>
     <p class="reveal" style="color:var(--muted); margin-bottom:2rem; max-width:600px; font-size:0.85rem; line-height:1.8;">
@@ -840,7 +841,7 @@
   <!-- SKILLS -->
   <section id="skills" style="min-height:auto; padding-bottom:2rem;">
     <div class="section-header reveal">
-      <div class="section-eyebrow">// 05 · Skills & Tools</div>
+      <div class="section-eyebrow">05 · Skills & Tools</div>
       <h2 class="section-title">The <em>toolkit</em>.</h2>
     </div>
     <div class="research-grid reveal" style="grid-template-columns: repeat(3,1fr);">
@@ -866,8 +867,8 @@
   <!-- HOBBIES -->
   <section id="hobbies" style="min-height:auto; padding-bottom:3rem;">
     <div class="section-header reveal">
-      <div class="section-eyebrow">// 06 · Beyond Physics</div>
-      <h2 class="section-title">When I'm not<br><em>at DESY.</em></h2>
+      <div class="section-eyebrow">06 · Beyond Physics</div>
+      <h2 class="section-title">When I'm not<br><em>doing physics.</em></h2>
     </div>
     <div class="about-right reveal">
       <div class="section-eyebrow" style="margin-bottom:1rem"></div>
@@ -899,16 +900,16 @@
   <!-- CONTACT -->
   <section id="contact">
     <div class="section-header reveal" style="text-align:center">
-      <div class="section-eyebrow">// 05 · Contact</div>
+      <div class="section-eyebrow">05 · Contact</div>
       <h2 class="section-title">Let's <em>connect.</em></h2>
     </div>
     <p class="reveal" style="color:var(--muted); max-width:420px; text-align:center; font-size:0.85rem;">
       Whether it's a collaboration, a question about my research, or just to say hello, I'd love to hear from you.
     </p>
     <div class="contact-links reveal">
-      <a href="mailto:soumyaa.vashishtha@desy.de" class="contact-link">✉ Email</a>
+      <a href="mailto:soumyaa.v@desy.de" class="contact-link">✉ Email</a>
       <a href="https://www.linkedin.com/in/soumyaa-v-900548190/" target="_blank" class="contact-link">in LinkedIn</a>
-      <a href="https://github.com/soumyaa-physics" target="_blank" class="contact-link">⌥ GitHub</a>
+      <a href="https://github.com/YOUR_GITHUB" target="_blank" class="contact-link">⌥ GitHub</a>
       <a href="#" class="contact-link">📄 CV / Resume</a>
     </div>
   </section>
@@ -1241,20 +1242,23 @@ resizeFeynman();
 drawStatic();
 
 // ── CONFERENCE FILTER ──────────────────────────────
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    const filter = this.dataset.filter;
-    document.querySelectorAll('.timeline-item').forEach(item => {
-      if (filter === 'all' || item.dataset.role === filter) {
-        item.classList.remove('hidden');
-      } else {
-        item.classList.add('hidden');
-      }
+const timelineControls = document.querySelector('.timeline-controls');
+if (timelineControls) {
+  timelineControls.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      timelineControls.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const filter = this.dataset.filter;
+      document.querySelectorAll('.timeline-item').forEach(item => {
+        if (filter === 'all' || item.dataset.role === filter) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
     });
   });
-});
+}
 
 // ── SCROLL REVEAL ──────────────────────────────────
 const observer = new IntersectionObserver(entries => {
